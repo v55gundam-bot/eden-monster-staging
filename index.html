@@ -81,7 +81,7 @@ const PROFILE_KEY='eden_promotion_demo_profile_v17';
 const profileDefaults={name:'이든 대원',avatar:'🧑🏻‍🚀',color:'#8bc9ff'};
 let demoProfile={...profileDefaults};
 try{const stored=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');if(stored&&typeof stored==='object'){demoProfile.name=String(stored.name||profileDefaults.name).slice(0,16);if(['🧑🏻‍🚀','🧑🏻‍✈️','👩🏻‍🚀','🪖','👽'].includes(stored.avatar))demoProfile.avatar=stored.avatar;if(/^#[0-9a-fA-F]{6}$/.test(stored.color))demoProfile.color=stored.color}}catch(e){}
-function refreshProfile(){ $('profile-name').value=demoProfile.name;$('profile-avatar').value=demoProfile.avatar;$('profile-color').value=demoProfile.color;$('profile-summary').textContent=`${demoProfile.avatar} ${demoProfile.name} · 군번줄 ${demoProfile.color} · 로컬 테스트 프로필`;document.querySelector('.hero').textContent=demoProfile.avatar }
+function refreshProfile(){ $('profile-name').value=demoProfile.name;$('profile-avatar').value=demoProfile.avatar;$('profile-color').value=demoProfile.color;$('profile-summary').textContent=`${demoProfile.avatar} ${demoProfile.name} · 군번줄 ${demoProfile.color} · 로컬 테스트 프로필`;/* Keep the approved soldier PNG in .hero; profile avatar is for preview only. */ }
 function saveProfile(){demoProfile={name:$('profile-name').value.trim().slice(0,16)||'이든 대원',avatar:$('profile-avatar').value,color:$('profile-color').value};try{localStorage.setItem(PROFILE_KEY,JSON.stringify(demoProfile))}catch(e){}refreshProfile()}
 ['profile-name','profile-avatar','profile-color'].forEach(id=>$(id).addEventListener('change',saveProfile));
 $('profile-preview-btn').onclick=()=>{saveProfile();showCeremony(true)};
