@@ -1,0 +1,416 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>이든 단어 특공대 · 학생 계정 연동 준비 v18</title><style>
+*{box-sizing:border-box}body{margin:0;background:#0b1630;color:#edf5ff;font-family:system-ui,'Malgun Gothic',sans-serif}.wrap{max-width:970px;margin:auto;padding:14px}header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{font-size:22px;margin:4px 0}small,.muted{color:#b4c6e4}select,button,input{font:inherit}select,button{border-radius:10px;border:1px solid #5b79ac;background:#233f70;color:white;padding:10px}select{max-width:100%;width:260px}.hud{display:flex;gap:12px;flex-wrap:wrap;align-items:center;background:#172b50;border-radius:12px;padding:12px;margin:12px 0}.health{width:160px;height:12px;background:#4b273c;border-radius:20px;overflow:hidden}.health>div{height:100%;background:#51d49e;width:100%;transition:width .2s}.stage{position:relative;height:390px;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at 50% 10%,#385f9e,#1a2b61 60%,#102048);border:2px solid #486b9f}.stars{position:absolute;inset:0;background-image:radial-gradient(#fff8 1px,transparent 2px);background-size:37px 41px;opacity:.24}.floor{position:absolute;left:0;right:0;bottom:48px;height:4px;background:#77b8d8;box-shadow:0 0 20px #7ac9ed}.hero{position:absolute;left:12%;bottom:50px;font-size:60px;filter:drop-shadow(0 8px 5px #0006)}#sprite{position:absolute;left:66%;top:0;transform:translateX(-50%);object-fit:contain;image-rendering:auto;pointer-events:none;filter:drop-shadow(0 10px 6px #0007)}.rocket{position:absolute;left:22%;bottom:125px;font-size:35px;opacity:0;pointer-events:none}.rocket.fly{animation:fly .48s ease-in forwards}@keyframes fly{0%{left:22%;opacity:1;transform:scale(.7)}100%{left:var(--target,66%);opacity:1;transform:scale(1.4)}}.quiz,.tools{background:#172b50;border-radius:14px;padding:16px;margin-top:12px}.word{text-align:center;font-size:27px;font-weight:800;margin:10px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.answers button{min-height:53px;background:#294d82}.answers button:disabled{opacity:.65}.tools{display:flex;flex-wrap:wrap;gap:8px}.tools button{flex:1;min-width:70px}.status{text-align:center;min-height:25px;color:#ffd97c}.note{font-size:12px;color:#aebed7;line-height:1.6}label{display:flex;gap:7px;align-items:center}input[type=checkbox]{width:18px;height:18px}@media(max-width:600px){.stage{height:320px}.hero{font-size:45px;left:6%}.wrap{padding:9px}h1{font-size:18px}.answers button{font-size:14px}.hud{font-size:13px}}
+
+.rankpanel{background:#172b50;border:1px solid #385d94;border-radius:14px;padding:14px;margin:12px 0}.ranktop{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.ranktitle{font-weight:800;color:#fbd38b;font-size:18px}.rankgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:12px}.rankgrid button{padding:8px 2px;font-size:12px;min-width:0}.rankgrid button.active{background:#3c7db4;border-color:#8be4ff}.rankgrid button:disabled{opacity:.36}.subrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.subrow button{padding:8px}.playerbar{height:9px;width:110px;border-radius:20px;background:#58313c;overflow:hidden}.playerbar div{height:100%;background:#ffbd66}.meter{height:8px;background:#2e4264;border-radius:10px;overflow:hidden;margin-top:10px}.meter div{height:100%;background:#71d6b2;transition:width .3s}.rules{font-size:12px;color:#b9cbe5;line-height:1.6;margin-top:9px}@media(max-width:600px){.rankgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.rankgrid button{font-size:11px}}
+
+.boss-panel{background:#1c3156;border:1px solid #6987b7;border-radius:12px;padding:12px;margin-top:10px}.boss-panel[hidden]{display:none}.boss-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.boss-pill{background:#47346d;color:#f5dcff;border-radius:99px;padding:4px 10px;font-size:12px}.boss-meter{height:8px;background:#24314b;border-radius:9px;overflow:hidden;margin-top:8px}.boss-meter>div{height:100%;background:linear-gradient(90deg,#8d7dff,#ed8bff);transition:width .3s}.stage.warning{animation:warning .35s ease-in-out 3}.stage.shielded:after{content:'🛡️';position:absolute;left:64%;top:26%;font-size:52px;filter:drop-shadow(0 0 12px #8bf);pointer-events:none}.stage.victory{animation:victory 1.4s ease-out}.stage .fx{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-size:64px;opacity:0}.stage .fx.show{animation:fx 1s ease-out forwards}@keyframes warning{50%{box-shadow:inset 0 0 85px #ff476c}}@keyframes victory{30%{filter:brightness(1.8)}70%{filter:brightness(1.2)}}@keyframes fx{0%{opacity:0;transform:scale(.5)}30%{opacity:1}100%{opacity:0;transform:scale(1.7)}}
+
+/* v14: portrait / landscape tablet and safe-area responsive layout */
+body{min-width:0}.wrap{width:100%;max-width:1100px;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}.stage{height:clamp(270px,40vw,440px)}.answers button{touch-action:manipulation;overflow-wrap:anywhere}.quiz .word{overflow-wrap:anywhere}.rankgrid button{min-height:44px}.boss-panel{line-height:1.5}.settings{background:#172b50;border:1px solid #3b5d90;border-radius:12px;padding:12px;margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}.settings select{width:auto;min-width:130px}.settings label{font-size:14px}.settings output{font-variant-numeric:tabular-nums}.stage .fx{z-index:5}.stage .rocket{z-index:4}.stage.shielded:after{z-index:3}.stage.warning{animation:warning .35s ease-in-out 3}.answers button.correct{background:#1b7957;border-color:#7affc4}.answers button.incorrect{background:#8c334c;border-color:#ff99ad}
+@media(max-width:650px){.stage{height:clamp(250px,64vw,370px)}.hud{gap:8px;padding:9px}.health{width:90px}.answers{gap:8px}.answers button{min-height:60px}.settings{gap:9px}.settings label{width:100%;justify-content:space-between}.rankgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(orientation:landscape) and (max-height:650px){.stage{height:clamp(230px,54vh,360px)}.wrap{max-width:1200px}.quiz{padding:10px}.word{margin:3px}.answers button{min-height:46px}}
+@media(prefers-reduced-motion:reduce){.stage.warning,.stage.victory,.stage .fx.show{animation-duration:.01ms!important}.rocket.fly{animation-duration:.01ms!important}}
+
+.result-overlay{position:fixed;inset:0;z-index:100;background:#071126df;display:grid;place-items:center;padding:18px}.result-overlay[hidden]{display:none}.result-card{width:min(95vw,470px);max-height:92vh;overflow:auto;border:2px solid #7ba8db;border-radius:22px;background:linear-gradient(160deg,#274779,#111f3c);padding:25px;text-align:center;box-shadow:0 24px 80px #0009}.result-icon{font-size:58px}.result-card h2{font-size:27px;margin:8px}.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.result-stats div{background:#0c1b35;border-radius:10px;padding:12px}.result-stats b{display:block;font-size:22px;color:#ffe4a1}.result-buttons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.result-buttons button{min-width:130px;background:#3a689d}.result-buttons button.primary{background:#f4c56c;color:#17223c;border-color:#ffdf9b;font-weight:800}.reward-line{color:#ffe19a;font-size:16px;font-weight:700}.result-sub{color:#bed0ec;font-size:13px;line-height:1.6}
+
+/* v16: ceremonial military dog-tag and accessible rank promotion */
+.ceremony{position:fixed;inset:0;z-index:120;background:radial-gradient(circle at 50% 25%,#305c96,#071020 72%);display:grid;place-items:center;padding:16px;overflow:auto}.ceremony[hidden]{display:none}.ceremony-panel{width:min(96vw,500px);max-height:94vh;overflow:auto;text-align:center;padding:20px;border-radius:24px;border:1px solid #7397c2;background:linear-gradient(155deg,#182d50,#0b162b);box-shadow:0 30px 90px #000a}.ceremony-eyebrow{color:#ffdf9b;letter-spacing:.18em;font-size:12px;font-weight:800}.dogchain{height:40px;margin:auto;width:3px;background:repeating-linear-gradient(to bottom,#d2dce6 0 3px,#637991 3px 6px)}.dogtag{position:relative;margin:0 auto 18px;padding:24px 15px;width:min(76vw,290px);min-height:235px;border-radius:36px;border:7px solid var(--tag-color,#9bd9ff);background:linear-gradient(145deg,#dfe9f3,#889eb2 48%,#cdd9e4);box-shadow:inset 0 2px 9px #fff9,inset 0 -5px 12px #334c65aa,0 15px 30px #0008;color:#172d46;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}.dogtag:before{content:'';position:absolute;top:9px;left:calc(50% - 7px);height:14px;width:14px;background:#34475d;border:3px solid #f2f6fa;border-radius:50%}.dogtag .insignia{font-size:56px;filter:drop-shadow(0 2px 1px #fff8)}.dogtag .newrank{font-size:30px;font-weight:1000}.dogtag .callsign{font-size:12px;font-weight:800;letter-spacing:.12em}.ceremony-stats{display:flex;justify-content:center;gap:16px;color:#c7d9f1;font-size:13px;margin:12px 0 18px}.ceremony-panel button{background:#f4c56c;color:#142641;border:1px solid #ffe0a0;font-weight:800;min-height:48px;padding:10px 22px}.ceremony-panel button:focus-visible{outline:3px solid #fff;outline-offset:3px}@media(prefers-reduced-motion:no-preference){.dogtag{animation:tag-in .65s cubic-bezier(.18,.8,.2,1.2) both}@keyframes tag-in{from{transform:translateY(30px) scale(.8);opacity:0}to{transform:none;opacity:1}}}
+</style><style>
+.profile-settings{margin:12px 0;padding:15px;border:1px solid #55789d;border-radius:16px;background:#122746;color:#e7f3ff}.profile-settings h2{font-size:16px;margin:0 0 10px}.profile-fields{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.profile-fields label{display:flex;flex-direction:column;gap:5px;font-size:13px}.profile-fields input,.profile-fields select{background:#f8fbff;color:#14253a;border:1px solid #aabdd1;border-radius:9px;padding:9px;min-height:42px}.profile-fields input[type=color]{width:76px;padding:3px}.profile-settings button{min-height:42px}.profile-summary{margin-top:10px;font-size:13px;color:#c3d8ef}.ceremony-portrait{font-size:52px;line-height:1.1}.rank-transition{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0;color:#f9e6b5;font-weight:800;flex-wrap:wrap}.rank-transition span{border:1px solid #6889b0;border-radius:12px;padding:8px 12px}.profile-preview{margin-top:10px;background:#223e60;color:#fff;border:1px solid #7096bd;border-radius:10px;padding:10px}
+</style></head><body><div class="wrap"><header><div><small>EDEN WORD SQUAD · 독립 오프라인 전투 테스트</small><h1>🏅 29종 몬스터 승급전 · v17</h1></div><select id="pick" aria-label="몬스터 선택"></select></header><section class="rankpanel"><div class="ranktop"><span class="ranktitle" id="ranktitle">훈련병 · 1단계</span><span id="stageinfo">1 / 29</span></div><div class="rankgrid" id="rankgrid"></div><div class="subrow"><button id="next" disabled>다음 승급전 ▶</button><button id="resetprogress">진행 기록 초기화</button><span>대원 HP <b id="playerhp">100</b></span><div class="playerbar"><div id="playerbar"></div></div></div><div class="meter"><div id="progressbar"></div></div><div id="boss-panel" class="boss-panel" hidden><div class="boss-line"><strong>🛸 보스전</strong><span class="boss-pill" id="boss-phase">1페이즈</span><span id="boss-pattern">공격 패턴 준비</span></div><div class="boss-meter"><div id="boss-shieldbar"></div></div><div class="rules">보스는 체력이 줄어들면 패턴이 변화합니다. 보호막이 활성화되면 정답 공격으로 먼저 보호막을 제거하세요. 경고 공격은 다음 문제에서 정답을 맞히면 회피합니다.</div></div><div class="rules">정답으로 적을 공격하고, 오답이면 대원 HP가 감소합니다. 승리하면 다음 단계가 열립니다. 7개 계급 × 4전투 + 마지막 UFO 보스전으로 구성한 <b>임시 승급전 규칙</b>입니다. 기록은 이 브라우저에만 저장됩니다.</div></section><section class="profile-settings" aria-label="테스트 대원 프로필"><h2>🪖 대원 프로필 · 진급식 미리보기</h2><div class="profile-fields"><label>대원 이름<input id="profile-name" maxlength="16" value="이든 대원" autocomplete="off"></label><label>캐릭터<select id="profile-avatar"><option value="🧑🏻‍🚀">우주 대원</option><option value="🧑🏻‍✈️">비행 대원</option><option value="👩🏻‍🚀">여성 우주 대원</option><option value="🪖">헬멧 대원</option><option value="👽">외계인 대원</option></select></label><label>군번줄 테두리<input type="color" id="profile-color" value="#8bc9ff"></label><button id="profile-preview-btn" type="button">진급식 미리보기</button></div><div class="profile-summary" id="profile-summary">테스트 프로필 · 이 브라우저에만 저장</div><div class="profile-preview">미리보기는 실제 승급전 기록이나 계급을 변경하지 않습니다. GAS·학생 계정에 전송하지 않습니다.</div></section><section class="settings" aria-label="전투 밸런스 설정"><strong>⚙️ v17 전투 테스트</strong><label>전투 난이도 <select id="difficulty"><option value="easy">쉬움</option><option value="normal" selected>보통</option><option value="hard">어려움</option></select></label><label>연출 속도 <select id="speed"><option value="slow">느림</option><option value="normal" selected>기본</option><option value="fast">빠름</option></select></label><span class="muted" id="balance-info" aria-live="polite"></span></section><div class="hud"><b id="name"></b><span>HP <b id="hp">100</b></span><div class="health"><div id="bar"></div></div><span>⭐ <b id="score">0</b></span><span>🔥 콤보 <b id="combo">0</b></span></div><div class="stage" id="stage"><div class="stars"></div><div class="floor"></div><div class="hero">🧑🏻‍🚀</div><img id="sprite" alt="몬스터 애니메이션"><div id="rocket" class="rocket">🚀</div><div id="fx" class="fx" aria-hidden="true">✨</div></div>
+<section id="eden-v35-mode" style="padding:10px;margin:10px 0;border:1px solid #5b79ac;border-radius:12px;background:#172b50">
+  <label style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="eden-v35-verified"> 서버 검증 몬스터 전투 (GAS 테스트 전용)</label>
+  <label style="margin-top:8px">문제 출처 <select id="eden-v38-source"><option value="sample">시범 5문항</option><option value="db">실제 코스 20문항</option></select></label><label style="margin-top:8px">코스 선택 <select id="eden-v39-course" style="min-width:180px;padding:9px;border-radius:8px"><option value="">코스 목록 불러오기 필요</option></select></label>
+<label style="margin-top:8px">시범 단계 <select id="eden-v46-stage"></select></label>
+<button type="button" id="eden-v46-progress" style="padding:7px 12px;border-radius:8px">단계 진행 조회</button>
+<button type="button" id="eden-v46-claim" style="padding:7px 12px;border-radius:8px">서버 검증 결과 단계 기록</button>
+<button type="button" id="eden-v45-recheck" style="padding:7px 12px;border-radius:8px">완료 결과 재조회</button><button type="button" id="eden-v39-load" style="padding:7px 12px;border-radius:8px">코스 목록 불러오기</button><div id="eden-v35-info" style="font-size:12px;color:#b4c6e4;margin-top:6px">일반 전투는 기존 로컬 퀴즈입니다. 서버 검증 모드의 결과는 기존 승급 기록과 별개입니다.</div>
+</section>
+<div class="quiz"><div class="muted" style="text-align:center">영단어의 올바른 뜻을 선택하면 공격해요!</div><div class="word" id="word"></div><div class="answers" id="answers"></div><div class="status" id="status" role="status"></div></div><div class="tools"><button id="reset">↻ 재시작</button><button data-act="idle">대기</button><button data-act="move">이동</button><button data-act="attack">공격</button><button data-act="hit">피격</button><button data-act="exit">퇴장</button><label><input id="align" type="checkbox" checked>v10 정렬값 적용</label></div><p class="note">29종 몬스터 자산을 이용한 독립 승급전 프로토타입입니다. 난이도·연출 속도는 이 테스트 화면에만 적용되며, 공식 학습 난이도와 무관합니다. 계급명·문항·체력·공격력은 임시 설계이며 실제 학생 진급 데이터와 연동되지 않습니다. 일부 캐릭터는 임시 변형 프레임입니다. 기존 학생용 앱·GAS는 변경하지 않았습니다.</p></div><div id="result-overlay" class="result-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="result-title"><div class="result-card"><div class="result-icon" id="result-icon">🏅</div><h2 id="result-title">전투 결과</h2><p id="result-message"></p><div class="result-stats"><div>정답<b id="result-correct">0</b></div><div>오답<b id="result-wrong">0</b></div><div>정답률<b id="result-accuracy">0%</b></div><div>획득 점수<b id="result-score">0</b></div></div><p class="reward-line" id="result-reward"></p><p class="result-sub" id="result-note"></p><div class="result-buttons"><button id="result-retry">↻ 다시 도전</button><button id="result-next" class="primary">다음 전투 ▶</button><button id="result-close">전투 화면 보기</button></div></div></div><div id="ceremony" class="ceremony" hidden role="dialog" aria-modal="true" aria-labelledby="ceremony-title"><div class="ceremony-panel"><div class="ceremony-eyebrow">EDEN WORD SQUAD · PROMOTION</div><h2 id="ceremony-title">진급을 축하합니다!</h2><div class="dogchain" aria-hidden="true"></div><div class="dogtag" id="dogtag"><div class="ceremony-portrait" id="ceremony-avatar">🧑🏻‍🚀</div><div class="insignia" id="ceremony-insignia">🎖️</div><div class="callsign" id="ceremony-callsign">이든 대원</div><div class="newrank" id="ceremony-rank">이병</div><div>MISSION COMPLETE</div></div><div class="rank-transition"><span id="ceremony-old-rank">훈련병</span> ➜ <span id="ceremony-new-rank">이병</span></div><p id="ceremony-description">새로운 계급을 획득했어요!</p><div class="ceremony-stats"><span id="ceremony-stage"></span><span id="ceremony-score"></span></div><button id="ceremony-claim">🎁 진급 확인 · 보상 수령</button><p class="result-sub">본 진급 보상은 오프라인 테스트용이며 학생 계정에 반영되지 않습니다.</p></div></div><script src="manifest.js"></script><script>
+const $=id=>document.getElementById(id);
+const ranks=['훈련병','이병','일병','상병','병장','하사','중사','최종 보스'];
+const vocab=[['abandon','버리다',['수집하다','유지하다','완성하다']],['accurate','정확한',['모호한','거대한','우연한']],['benefit','이익',['장애물','책임','소음']],['contribute','기여하다',['거부하다','감추다','낭비하다']],['decline','감소하다',['증명하다','확장하다','연결하다']],['evidence','증거',['추측','목적','습관']],['frequent','빈번한',['희귀한','불가능한','충분한']],['maintain','유지하다',['파괴하다','발견하다','미루다']],['predict','예측하다',['복사하다','방해하다','설득하다']],['significant','중요한',['일시적인','무관한','평범한']]];
+const KEY='eden_promotion_v12_unlinked';
+const BALANCE={easy:{attack:1.25,incoming:.7},normal:{attack:1,incoming:1},hard:{attack:.8,incoming:1.35}};
+const SPEED={slow:1.5,normal:1,fast:.7};
+let speedFactor=1;
+function delay(ms){return Math.round(ms*speedFactor)}
+function balance(){return BALANCE[$('difficulty').value]||BALANCE.normal}
+function refreshBalance(){speedFactor=SPEED[$('speed').value]||1;$('balance-info').textContent=`정답 공격 ×${balance().attack} · 오답 피해 ×${balance().incoming} · 연출 ×${speedFactor}`}
+$('difficulty').onchange=refreshBalance;$('speed').onchange=refreshBalance;refreshBalance();let saved=0;try{saved=Math.max(0,Math.min(29,parseInt(localStorage.getItem(KEY)||'0',10)||0))}catch(e){}
+const pick=$('pick');MONSTERS.forEach((m,i)=>{let o=document.createElement('option');o.value=i;o.textContent=(i===28?'보스 · ':`${i+1} · `)+m.name;pick.append(o)});
+let battleCorrect=0,battleWrong=0,bestCombo=0,resultTimer=null;let phase=1,shield=0,warning=false,bossHits=0;let mi=0,hp=100,playerHP=100,score=0,combo=0,act='idle',frame=0,until=0,q=0,locked=false,won=false,lost=false,serial=0;
+const maxHP=()=>mi===28?240:100+Math.floor(mi/4)*20;
+const damage=()=>Math.max(1,Math.round((mi===28?30:Math.max(12,35-Math.floor(mi/4)*3))*balance().attack));
+const enemyDamage=()=>Math.min(32,12+Math.floor(mi/4)*3+(mi===28?8:0));
+function current(){return MONSTERS[mi]}function seq(){return current().animations[act]?.length?current().animations[act]:current().animations.idle}
+function render(){const m=current(),files=seq();if(!files?.length)return;const im=$('sprite');im.src=files[frame%files.length];const stage=$('stage'),k=stage.clientWidth/340,ky=stage.clientHeight/300,use=$('align').checked,s=use?m.displayScale:m.baseScale,w=m.imageWidth*s*k,h=m.imageHeight*s*k;im.style.width=w+'px';im.style.height=h+'px';const box=m.bbox||[0,0,m.imageWidth,m.imageHeight],x=use?m.x:170,ground=use?m.groundY:245,center=(box[0]+box[2])/2;im.style.left=(x*k-(center-m.imageWidth/2)*s*k)+'px';im.style.top=(ground*ky-box[3]*s*k)+'px';$('rocket').style.setProperty('--target',(x/340*100)+'%')}
+function play(a,duration=650){act=a;frame=0;until=performance.now()+delay(duration);render()}
+function rankName(i){return i===28?'UFO 최종 보스':ranks[Math.floor(i/4)]}
+function rankUI(){const grid=$('rankgrid');grid.replaceChildren();for(let i=0;i<7;i++){let b=document.createElement('button');b.textContent=ranks[i];b.className=Math.floor(mi/4)===i?'active':'';b.disabled=i*4>saved;b.onclick=()=>start(i*4);grid.append(b)}let b=document.createElement('button');b.textContent='🛸 보스';b.disabled=saved<28;b.className=mi===28?'active':'';b.onclick=()=>start(28);grid.append(b);$('ranktitle').textContent=rankName(mi)+(mi<28?' · '+(mi%4+1)+'/4 전투':'');$('stageinfo').textContent=`${mi+1} / 29 단계`;pick.value=mi;[...pick.options].forEach((o,i)=>o.disabled=i>saved);$('progressbar').style.width=(saved/29*100)+'%';$('next').disabled=!won||mi>=28}
+function phaseFor(){return mi===28?(hp<=80?3:hp<=160?2:1):1}
+function bossUI(){const boss=mi===28;$('boss-panel').hidden=!boss;$('stage').classList.toggle('shielded',boss&&shield>0);if(!boss){$('stage').classList.remove('warning');return} $('boss-phase').textContent=phase+'페이즈';$('boss-pattern').textContent=warning?'⚠️ 다음 문제: 레이저 예고!':shield>0?'🛡️ 보호막 '+shield+' HP':'⚡ 공격 가능';$('boss-shieldbar').style.width=Math.min(100,shield/50*100)+'%'}
+function effect(emoji){const el=$('fx');el.textContent=emoji;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
+function phaseCheck(){if(mi!==28)return;const next=phaseFor();if(next>phase){phase=next;shield=next===2?40:50;warning=false;effect('⚡');$('status').textContent=`🛸 ${phase}페이즈 돌입! 보호막 발생`;play('attack',750)}bossUI()}
+function update(){$('name').textContent=current().name;$('hp').textContent=hp+' / '+maxHP();$('score').textContent=score;$('combo').textContent=combo;$('bar').style.width=(hp/maxHP()*100)+'%';$('playerhp').textContent=playerHP;$('playerbar').style.width=playerHP+'%';rankUI();bossUI()}
+function question(){locked=false;const v=vocab[(q++ + mi*3)%vocab.length];$('word').textContent=v[0];const options=[v[1],...v[2]].map((s,i)=>({s,ok:i===0}));for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]]} $('answers').replaceChildren(...options.map(o=>{const b=document.createElement('button');b.textContent=o.s;b.onclick=()=>answer(o.ok,b);return b}))}
+let edenV24StartedAt=Date.now();
+let edenV24ResultSeq=0;
+function edenV24EmitResult(victory){
+  const id='battle_'+Date.now().toString(36)+'_'+(++edenV24ResultSeq).toString(36)+'_'+Math.random().toString(36).slice(2,12);
+  const result={recordId:id,stage:mi+1,outcome:victory?'win':'lose',correct:battleCorrect,wrong:battleWrong,seconds:Math.max(0,Math.round((Date.now()-edenV24StartedAt)/1000))};
+  if(window.parent!==window)window.parent.postMessage({type:'eden:v24:battle-result',result},'*');
+  const e=document.getElementById('eden-v24-save');if(e)e.textContent='전투 결과 전송 요청 · 서버 응답 대기';
+}
+function showResult(victory){
+ edenV24EmitResult(victory);
+ const attempts=battleCorrect+battleWrong,accuracy=attempts?Math.round(battleCorrect/attempts*100):0;
+ const promoted=victory&&(mi===28||mi%4===3),earned=victory?score:0;
+ $('result-icon').textContent=victory?(mi===28?'🏆':'🎖️'):'🛡️';
+ $('result-title').textContent=victory?(mi===28?'최종 보스 격파!':promoted?'계급 진급 성공!':'전투 승리!'):'전투 실패';
+ $('result-message').textContent=victory?`${mi+1}단계 클리어 · ${rankName(mi)}`:`${mi+1}단계 · 재도전할 수 있어요`;
+ $('result-correct').textContent=battleCorrect;$('result-wrong').textContent=battleWrong;
+ $('result-accuracy').textContent=accuracy+'%';$('result-score').textContent=score.toLocaleString('ko-KR');
+ $('result-reward').textContent=victory?(promoted?`🏅 진급 보상: ${mi===28?'최종 작전 완료':mi<28?ranks[Math.min(6,Math.floor(mi/4)+1)]+' 계급 해금':'승급'} · ⭐ ${earned.toLocaleString('ko-KR')}점`:`🎁 단계 클리어 · ⭐ ${earned.toLocaleString('ko-KR')}점`):'보상 없음 · 다시 도전하세요';
+ $('result-note').textContent=`최대 콤보 ${bestCombo}회 · 보상과 계급은 테스트용 표시이며 학생 계정이나 GAS에 기록되지 않습니다.`;
+ $('result-next').hidden=!victory||mi===28;
+ $('result-overlay').hidden=false;
+ if(victory&&promoted){pendingCeremony=true;showCeremony()}
+ }
+const PROFILE_KEY='eden_promotion_demo_profile_v17';
+const profileDefaults={name:'이든 대원',avatar:'🧑🏻‍🚀',color:'#8bc9ff'};
+let demoProfile={...profileDefaults};
+try{const stored=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');if(stored&&typeof stored==='object'){demoProfile.name=String(stored.name||profileDefaults.name).slice(0,16);if(['🧑🏻‍🚀','🧑🏻‍✈️','👩🏻‍🚀','🪖','👽'].includes(stored.avatar))demoProfile.avatar=stored.avatar;if(/^#[0-9a-fA-F]{6}$/.test(stored.color))demoProfile.color=stored.color}}catch(e){}
+function refreshProfile(){ $('profile-name').value=demoProfile.name;$('profile-avatar').value=demoProfile.avatar;$('profile-color').value=demoProfile.color;$('profile-summary').textContent=`${demoProfile.avatar} ${demoProfile.name} · 군번줄 ${demoProfile.color} · 로컬 테스트 프로필`;document.querySelector('.hero').textContent=demoProfile.avatar }
+function saveProfile(){demoProfile={name:$('profile-name').value.trim().slice(0,16)||'이든 대원',avatar:$('profile-avatar').value,color:$('profile-color').value};try{localStorage.setItem(PROFILE_KEY,JSON.stringify(demoProfile))}catch(e){}refreshProfile()}
+['profile-name','profile-avatar','profile-color'].forEach(id=>$(id).addEventListener('change',saveProfile));
+$('profile-preview-btn').onclick=()=>{saveProfile();showCeremony(true)};
+refreshProfile();
+const rankIcons=['🪖','🎖️','🎖️','🏅','🏅','⭐','🌟','🏆'];
+let pendingCeremony=false;
+function showCeremony(preview=false){
+ const newIndex=mi===28?7:Math.min(6,Math.floor(mi/4)+1);
+ $('ceremony-avatar').textContent=demoProfile.avatar; $('ceremony-callsign').textContent=demoProfile.name; $('ceremony-old-rank').textContent=ranks[Math.max(0,newIndex-1)]||'훈련병'; $('ceremony-new-rank').textContent=mi===28?'최종 작전 완수':ranks[newIndex];
+ $('ceremony-rank').textContent=mi===28?'최종 작전 완수':ranks[newIndex];
+ $('ceremony-insignia').textContent=rankIcons[newIndex];
+ $('ceremony-stage').textContent=`${mi+1}단계 완료`;
+ $('ceremony-score').textContent=`⭐ ${score.toLocaleString('ko-KR')}점`;
+ $('ceremony-description').textContent=preview?'프로필·군번줄 미리보기입니다. 실제 진급 기록은 변경되지 않습니다.':(mi===28?'UFO 최종 보스를 격파했어요!':'새로운 계급을 획득했어요!');
+ $('dogtag').style.setProperty('--tag-color',demoProfile.color); $('ceremony-claim').textContent=preview?'미리보기 닫기':'🎁 진급 확인 · 보상 수령';
+ $('ceremony').hidden=false; $('ceremony-claim').focus();
+}
+$('ceremony-claim').onclick=()=>{ $('ceremony').hidden=true; pendingCeremony=false; if(!$('result-overlay').hidden)$('result-next').focus(); else $('profile-preview-btn').focus(); };
+function hideResult(){ $('result-overlay').hidden=true; $('ceremony').hidden=true; pendingCeremony=false }
+$('result-retry').onclick=()=>{hideResult();start(mi)};
+$('result-next').onclick=()=>{if(won&&mi<28){hideResult();start(mi+1)}};
+$('result-close').onclick=hideResult;
+function lockButtons(){[...$('answers').children].forEach(b=>b.disabled=true)}
+function answer(ok,button){if(locked||won||lost)return;locked=true;lockButtons();if(button)button.classList.add(ok?'correct':'incorrect');const turn=serial;if(ok){battleCorrect++;score+=100+combo*10;combo++;bestCombo=Math.max(bestCombo,combo);$('status').textContent='정답! 포탄 발사 🚀';const rocket=$('rocket');rocket.classList.remove('fly');void rocket.offsetWidth;rocket.classList.add('fly');play('attack',480);setTimeout(()=>{if(turn!==serial)return;const dealt=damage();if(mi===28&&shield>0){const absorb=Math.min(shield,dealt);shield-=absorb;hp=Math.max(0,hp-(dealt-absorb));effect('🛡️')}else{hp=Math.max(0,hp-dealt);effect('💥')}if(mi===28&&warning){warning=false;effect('✨')}phaseCheck();play(hp?'hit':'exit',hp?550:1250);if(hp===0){won=true;if(mi===28){$('stage').classList.add('victory');effect('🏆')}saved=Math.max(saved,mi+1);try{localStorage.setItem(KEY,String(saved))}catch(e){}$('status').textContent=mi===28?'🏆 최종 보스 격파! 29단계 완료!':'🎖 승급전 승리! 다음 단계가 열렸어요.';resultTimer=setTimeout(()=>{if(turn===serial)showResult(true)},delay(850))}update()},delay(460))}else{battleWrong++;combo=0;let dmg=enemyDamage();if(mi===28){dmg+=phase===3?12:phase===2?6:0;if(warning){dmg+=12;warning=false;effect('🔴')}else{bossHits++;if(bossHits%2===0){warning=true;$('stage').classList.add('warning');setTimeout(()=>$('stage').classList.remove('warning'),1100)}}}dmg=Math.max(1,Math.round(dmg*balance().incoming));playerHP=Math.max(0,playerHP-dmg);$('status').textContent=`오답! 대원 HP -${dmg}`;play(mi===28?'attack':'move',650);if(playerHP===0){lost=true;$('status').textContent='대원 HP 소진! 재시작으로 재도전하세요.';resultTimer=setTimeout(()=>{if(turn===serial)showResult(false)},delay(550))}update()}setTimeout(()=>{if(turn!==serial)return;if(!won&&!lost){play('idle',100000);question();$('status').textContent=''}},delay(1350))}
+function start(i){edenV24StartedAt=Date.now();if(i>saved||i<0||i>=MONSTERS.length)return;hideResult();if(resultTimer)clearTimeout(resultTimer);battleCorrect=0;battleWrong=0;bestCombo=0;serial++;mi=i;hp=maxHP();phase=1;shield=0;warning=false;bossHits=0;$('stage').classList.remove('victory','warning','shielded');playerHP=100;score=0;combo=0;won=false;lost=false;act='idle';frame=0;until=0;update();question();render();$('status').textContent=mi===28?'🛸 최종 보스 등장! 3페이즈를 돌파하세요.':'승급전 시작!'}
+pick.onchange=()=>start(+pick.value);$('align').onchange=render;$('reset').onclick=()=>start(mi);$('next').onclick=()=>{if(won&&mi<28)start(mi+1)};$('resetprogress').onclick=()=>{if(confirm('이 브라우저의 승급전 진행 기록을 초기화할까요?')){saved=0;try{localStorage.removeItem(KEY)}catch(e){}start(0)}};
+document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{if(!locked&&!won&&!lost)play(b.dataset.act,1100)});
+let lastTick=0;function animate(now){if(now-lastTick<125*speedFactor){requestAnimationFrame(animate);return}lastTick=now;const files=seq();if(!files?.length){requestAnimationFrame(animate);return}if(performance.now()>until&&act!=='idle'){act='idle';frame=0}frame=(frame+1)%seq().length;render();requestAnimationFrame(animate)}requestAnimationFrame(animate);window.addEventListener('resize',render);start(0);
+</script><section id="account-bridge" style="margin:18px auto;padding:16px;max-width:940px;border:1px solid #6385ac;border-radius:16px;background:#152b49;color:#eef6ff"><h2 style="margin:0 0 8px">🔗 학생 계정 연동 준비 · v18</h2><p style="font-size:13px;line-height:1.6">현재는 실제 GAS에 접속하지 않는 안전한 로컬 모의 연동입니다. 아래 JSON으로 학생 프로필과 진행 상태를 불러오거나, 전투 결과를 내보낼 수 있습니다.</p><label for="bridge-json">학생 데이터 JSON</label><textarea id="bridge-json" rows="6" style="display:block;width:100%;margin:8px 0;background:#09182d;color:#fff;border:1px solid #567da6;border-radius:8px;padding:10px" spellcheck="false"></textarea><div style="display:flex;flex-wrap:wrap;gap:8px"><button id="bridge-load" type="button">JSON 불러오기</button><button id="bridge-export" type="button">현재 기록 내보내기</button><button id="bridge-sample" type="button">예시 채우기</button></div><p id="bridge-status" role="status" aria-live="polite" style="font-size:13px"></p></section><script>
+/* v18 local-only integration boundary: no GAS URL, credential or network requests. */
+(function(){
+const el=id=>document.getElementById(id);
+const schemaVersion=1;
+const sample={schemaVersion,studentId:"demo-student-001",profile:{name:"이든 대원",avatar:"🧑🏻‍🚀",color:"#8bc9ff"},progress:{unlockedStage:0},battleHistory:[]};
+const avatars=["🧑🏻‍🚀","🧑🏻‍✈️","👩🏻‍🚀","🪖","👽"];
+function valid(x){if(!x||typeof x!=="object"||x.schemaVersion!==1||typeof x.studentId!=="string"||!/^[-_a-zA-Z0-9]{1,64}$/.test(x.studentId))throw Error("학생 ID 또는 버전이 올바르지 않습니다.");if(!x.profile||typeof x.profile.name!=="string"||x.profile.name.length>16||!avatars.includes(x.profile.avatar)||!/^#[0-9a-fA-F]{6}$/.test(x.profile.color))throw Error("프로필 데이터가 올바르지 않습니다.");if(!x.progress||!Number.isInteger(x.progress.unlockedStage)||x.progress.unlockedStage<0||x.progress.unlockedStage>29)throw Error("진행 단계는 0~29 사이의 정수여야 합니다.");if(x.battleHistory!==undefined&&(!Array.isArray(x.battleHistory)||x.battleHistory.length>1000))throw Error("전투 기록 형식이 올바르지 않습니다.");return x}
+function status(msg){el('bridge-status').textContent=msg}
+function snapshot(){return {schemaVersion,studentId:window.edenBridgeStudentId||sample.studentId,profile:{...demoProfile},progress:{unlockedStage:saved},battleHistory:window.edenBridgeHistory||[]}}
+function apply(x){valid(x);window.edenBridgeStudentId=x.studentId;window.edenBridgeHistory=Array.isArray(x.battleHistory)?x.battleHistory:[];demoProfile={name:x.profile.name||'이든 대원',avatar:x.profile.avatar,color:x.profile.color};saved=x.progress.unlockedStage;try{localStorage.setItem(PROFILE_KEY,JSON.stringify(demoProfile));localStorage.setItem(KEY,String(saved))}catch(e){}refreshProfile();start(0);status('모의 학생 데이터 적용 완료 · 서버에 전송하지 않았습니다.');return snapshot()}
+el('bridge-sample').onclick=()=>{el('bridge-json').value=JSON.stringify(sample,null,2);status('예시 데이터 준비 완료')};
+el('bridge-load').onclick=()=>{try{apply(JSON.parse(el('bridge-json').value))}catch(e){status('불러오기 실패: '+e.message)}};
+el('bridge-export').onclick=()=>{el('bridge-json').value=JSON.stringify(snapshot(),null,2);status('현재 기록을 JSON으로 출력했습니다. 복사해 백업할 수 있습니다.')};
+window.EdenBattleBridge={schemaVersion,importStudent:apply,exportStudent:snapshot};
+window.addEventListener('eden:student-import',e=>{try{apply(e.detail)}catch(err){status('외부 데이터 거부: '+err.message)}});
+const oldAnswer=answer;
+answer=function(ok,button){const before=mi;const c=battleCorrect,w=battleWrong;oldAnswer(ok,button);if(window.edenBridgeStudentId){window.edenBridgeHistory=window.edenBridgeHistory||[];window.edenBridgeHistory.push({stage:before+1,correct:!!ok,at:new Date().toISOString()});if(window.edenBridgeHistory.length>1000)window.edenBridgeHistory.shift()}};
+el('bridge-sample').click();
+})();
+</script><div id="eden-v24-save" role="status" style="position:fixed;bottom:8px;right:8px;background:#0b2848;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;z-index:10000">v24 · GAS 연동 대기</div>
+<script>
+window.addEventListener('message',function(ev){
+ if(ev.source!==window.parent||!ev.data||ev.data.type!=='eden:v24:save-status')return;
+ document.getElementById('eden-v24-save').textContent=String(ev.data.message||'').slice(0,140);
+});
+</script>
+<script>
+(function(){
+ const el=id=>document.getElementById(id);
+ const toggle=el('eden-v35-verified'),info=el('eden-v35-info');
+ let verified=false,token=null,current=null,seq=0,serialQuiz=0,activeSource='sample',activeCourse='';
+ const awaiting=new Map();
+ function rpc(action,args={}){
+  return new Promise((resolve,reject)=>{
+   if(window.parent===window){reject(Error('GAS 학생 화면에서 열어야 합니다.'));return}
+   const id=++seq;
+   const t=setTimeout(()=>{awaiting.delete(id);reject(Error('서버 응답 시간 초과'))},18000);
+   awaiting.set(id,p=>{clearTimeout(t);resolve(p)});
+   window.parent.postMessage({type:'eden:v35:quiz-rpc',action,id,...args},'*');
+  });
+ }
+ window.addEventListener('message',e=>{
+  if(e.source!==window.parent||!e.data||e.data.type!=='eden:v35:quiz-response')return;
+  const fn=awaiting.get(e.data.id);if(!fn)return;awaiting.delete(e.data.id);fn(e.data.payload);
+ });
+ // v54: 서버 확정 응답만 화면 HP/애니메이션에 반영한다.
+ let lastServerTurn=0;
+ const v54Hud=document.createElement('div');
+ v54Hud.id='eden-v54-hud';
+ v54Hud.setAttribute('aria-live','polite');
+ v54Hud.style.cssText='display:none;margin:8px 0;padding:10px;border:1px solid #386B9B;border-radius:10px;background:#142D4B;color:white;font-size:13px;line-height:1.6';
+ info.insertAdjacentElement('afterend',v54Hud);
+ function v54Reset(){lastServerTurn=0;v54Hud.style.display='none';v54Hud.textContent=''}
+ function v54Render(a){
+  if(!a||!Number.isInteger(Number(a.turn))||!Number.isFinite(Number(a.monsterHp))||!Number.isFinite(Number(a.studentHp)))return false;
+  const turn=Number(a.turn),mh=Number(a.monsterHp),mm=Number(a.monsterMaxHp),sh=Number(a.studentHp),sm=Number(a.studentMaxHp);
+  if(turn<lastServerTurn||turn>20||mm<=0||sm<=0||mh<0||mh>mm||sh<0||sh>sm)return false;
+  lastServerTurn=turn;
+  // 기존 전투 화면은 자체 HP 스케일을 쓰므로 서버 HP 비율만 투영한다.
+  hp=Math.max(0,Math.round(maxHP()*mh/mm));
+  playerHP=Math.max(0,Math.round(100*sh/sm));
+  battleCorrect=Number(a.correctCount)||0;
+  battleWrong=Number(a.wrongCount)||0;
+  update();
+  v54Hud.style.display='block';
+  v54Hud.textContent='서버 확정 '+turn+'/20 · 몬스터 '+mh+'/'+mm+' HP · 학생 '+sh+'/'+sm+' HP · '+(a.outcome==='victory'?'시범 승리':a.outcome==='defeat'?'시범 패배':'진행 중');
+  return true;
+ }
+ function v54Animate(a){
+  if(a.correct){effect('💥');play('hit',550)}
+  else{effect('⚠️');play('move',550)}
+ }
+
+ // v55: finalized results and stage records are recovered from the server, never local flags.
+ let v55Finalizing=false;
+ const v55Result=document.createElement('div');
+ v55Result.id='eden-v55-result';v55Result.setAttribute('aria-live','polite');
+ v55Result.style.cssText='display:none;margin:8px 0;padding:12px;border:1px solid #386B9B;border-radius:10px;background:#eef3fa;color:#142D4B;line-height:1.6';
+ v54Hud.insertAdjacentElement('afterend',v55Result);
+ function v55Show(r,message){
+  v55Result.style.display='block';
+  v55Result.textContent=(message?message+' · ':'')+'몬스터 '+r.stage+'단계 · '+r.correct+'/20 · '+(r.passed?'시범 승리':'시범 패배')+' · '+(r.recorded?'단계 기록 확인':'단계 기록 대기')+' · 공식 승급 미반영';
+ }
+ async function v55Recover(){
+  if(!token||activeSource!=='db')throw Error('현재 DB 전투 세션 없음');
+  const stage=Number(stageSelect.value);
+  const r=await rpc('result-recovery',{token,course:activeCourse,stage});
+  if(!r||!r.ok)throw Error(r&&r.msg||'결과 복구 실패');
+  if(!r.finished)return r;
+  if(!r.recorded){
+   const claim=await rpc('stage-claim',{token,course:activeCourse,stage});
+   if(!claim||!claim.ok)throw Error('완료됨, 단계 기록 미확정: '+(claim&&claim.msg||'오류'));
+   const again=await rpc('result-recovery',{token,course:activeCourse,stage});
+   if(!again||!again.ok||!again.recorded)throw Error('단계 기록 재조회 실패');
+   v55Show(again,'서버 결과 복구');return again;
+  }
+  v55Show(r,'서버 결과 확인');return r;
+ }
+ async function v55Finish(){
+  if(v55Finalizing)return;
+  v55Finalizing=true;
+  try{
+   const x=await rpc('db-finalize',{token,course:activeCourse});
+   if(!x||!x.ok||!x.finished)throw Error(x&&x.msg||'서버 완료 처리 실패');
+   const result=await v55Recover();
+   if(!result.finished||!result.recorded)throw Error('완료/단계 기록 확인 실패');
+   status('서버 전투 결과 확정 · '+(result.passed?'시범 승리':'시범 패배')+' · '+result.correct+'/20');
+  }catch(e){status('결과 확정 또는 기록 확인 실패 · 결과 복구 버튼으로 재시도: '+e.message)}
+  finally{v55Finalizing=false}
+ }
+ const v55Retry=document.createElement('button');v55Retry.type='button';
+ v55Retry.id='eden-v55-recover';v55Retry.textContent='서버 최종 결과·단계 기록 복구';
+ v55Retry.style.cssText='padding:8px 12px;margin:5px;border-radius:8px';
+ v55Result.insertAdjacentElement('afterend',v55Retry);
+ v55Retry.addEventListener('click',async()=>{
+  if(v55Finalizing)return;v55Finalizing=true;v55Retry.disabled=true;
+  try{
+   let r=await rpc('result-recovery',{token,course:activeCourse,stage:Number(stageSelect.value)});
+   if(!r||!r.ok)throw Error(r&&r.msg||'조회 오류');
+   if(!r.finished){
+    const x=await rpc('db-finalize',{token,course:activeCourse});
+    if(!x||!x.ok)throw Error(x&&x.msg||'20문항 완료 전 또는 완료 처리 실패');
+   }
+   r=await v55Recover();
+   if(!r.finished||!r.recorded)throw Error('완료 기록 미확정');
+   status('서버 최종 결과 및 단계 기록 복구 완료');
+  }catch(e){status('복구 실패: '+e.message)}
+  finally{v55Retry.disabled=false;v55Finalizing=false}
+ });
+ const originalQuestion=question,originalStart=start;
+ function status(msg){info.textContent=String(msg);el('status').textContent=String(msg)}
+ question=function(){
+  if(!verified)return originalQuestion();
+  const runId=++serialQuiz;
+  locked=true;el('answers').replaceChildren();el('word').textContent='서버 문제 불러오는 중…';
+  rpc(activeSource==='db'?'db-question':'question',{token,course:activeCourse}).then(r=>{
+   if(runId!==serialQuiz||!verified)return;
+   if(!r||!r.ok){status(r&&r.msg||'문제 요청 실패');return}
+   if(r.finished){el('word').textContent='서버 검증 문제 완료';status('서버 기록으로 결과 확인 중…');
+    (activeSource==='db'?v55Finish():rpc('verified-result',{token,course:activeCourse})).then(x=>{
+      if(runId!==serialQuiz||!verified)return;
+      if(activeSource==='db')return;
+      status(x&&x.ok&&x.finished?
+        '서버 검증 완료 · 정답 '+x.correct+' / '+(x.total||20)+' · '+(x.passed?'시범 퀴즈 통과':'시범 퀴즈 미통과')+' · 공식 승급 미반영':
+        '서버 완료 처리 실패: '+(x&&x.msg||'응답 오류')+' · 문제 새로고침으로 재시도');
+    }).catch(e=>status(e.message));return}
+   current=r.questionId;el('word').textContent=r.word;locked=false;
+   r.choices.forEach((choice,i)=>{
+    const button=document.createElement('button');button.textContent=choice;
+    button.onclick=()=>{
+     if(locked)return;locked=true;[...el('answers').children].forEach(x=>x.disabled=true);
+     // 네트워크 응답을 잃었을 때도 동일한 questionId/choiceIndex를 재전송한다.
+     // 서버의 중복 제출 처리 결과를 받아야만 다음 문제로 넘어간다.
+     const submittedId=current,submittedIndex=i;
+     const submit=()=>rpc(activeSource==='db'?'db-answer':'answer',{
+      token,course:activeCourse,questionId:submittedId,choiceIndex:submittedIndex
+     }).then(a=>{
+      if(runId!==serialQuiz||!verified)return;
+      if(!a||!a.ok){status(a&&a.msg||'서버 판정 실패');return}
+      if(activeSource==='db'){
+       const stage=Number(el('eden-v46-stage').value);
+       if(Number(a.stage)!==stage||!v54Render(a)){
+        status('서버 전투 상태 검증 실패 · 다음 문제 진행을 중단했습니다.');return;
+       }
+      }else{
+       if(a.correct)battleCorrect++;else battleWrong++;
+       update();
+      }
+      button.classList.add(a.correct?'correct':'incorrect');
+      v54Animate(a);
+      status((a.correct?'서버 판정: 정답':'서버 판정: 오답')+' · '+(a.duplicate?'중복 요청 복구':'기록 완료'));
+      setTimeout(()=>{if(verified&&runId===serialQuiz)question()},delay(700));
+     }).catch(e=>{
+      if(runId!==serialQuiz||!verified)return;
+      status('통신 오류 · 같은 답안 재전송 버튼으로 복구: '+e.message);
+      const retry=document.createElement('button');
+      retry.textContent='같은 답안 다시 전송';retry.className='eden-v54-retry';
+      retry.onclick=()=>{retry.disabled=true;submit()};
+      el('answers').appendChild(retry);
+     });
+     submit();
+    };
+    el('answers').appendChild(button);
+   });
+  }).catch(e=>status(e.message));
+ };
+ start=function(i){
+  if(!verified)return originalStart(i);
+  ++serialQuiz;locked=true;v54Reset();v55Finalizing=false;v55Result.style.display='none';
+  const serverQuestion=question;question=function(){};
+  try{originalStart(i)}finally{question=serverQuestion} // 세션 발급 전 문제 요청 차단
+  const runId=++serialQuiz;locked=true;el('answers').replaceChildren();el('word').textContent='서버 세션 발급 중…';
+  token=null;
+  stageSelect.disabled=false;
+  activeSource=el('eden-v38-source').value;
+  activeCourse=el('eden-v39-course').value.trim();
+  if(activeSource==='db'&&!activeCourse){status('코스 목록을 불러온 뒤 코스를 선택하세요.');return}
+  rpc('start').then(r=>{
+   if(!verified||runId!==serialQuiz)return;
+   if(!r||!r.ok){status(r&&r.msg||'세션 발급 실패');return}
+   token=r.token;
+   if(activeSource==='db'){
+    const stage=Number(stageSelect.value);
+    rpc('stage-bind',{token,course:activeCourse,stage}).then(bound=>{
+     if(runId!==serialQuiz||!verified)return;
+     if(!bound||!bound.ok){status('서버 단계 고정 실패: '+(bound&&bound.msg||'응답 오류'));token=null;return}
+     stageSelect.disabled=true;status('서버 '+stage+'단계 고정 완료 · 문제 출제 시작');question();
+    }).catch(e=>{status('서버 단계 고정 오류: '+e.message);token=null});
+   }else{status('서버 검증 전투 시작');question()}
+  }).catch(e=>status(e.message));
+ };
+ const stageSelect=el('eden-v46-stage');
+ for(let n=1;n<=29;n++)stageSelect.add(new Option('몬스터 '+n+'단계',String(n)));
+ const boardButton=document.createElement('button');
+ boardButton.type='button';boardButton.id='eden-v58-board';boardButton.textContent='29단계 현황 보기';
+ boardButton.style.cssText='padding:7px 12px;border-radius:8px;margin:5px';
+ el('eden-v46-progress').insertAdjacentElement('afterend',boardButton);
+ const boardPanel=document.createElement('div');boardPanel.id='eden-v58-board-panel';
+ boardPanel.setAttribute('aria-live','polite');boardPanel.style.cssText='display:none;max-height:200px;overflow:auto;margin:8px 0;padding:8px;border:1px solid #667;border-radius:9px;display:none';
+ boardButton.insertAdjacentElement('afterend',boardPanel);
+ boardButton.addEventListener('click',async()=>{
+  const course=el('eden-v39-course').value;
+  if(!course){status('먼저 코스를 선택하세요.');return}
+  boardButton.disabled=true;
+  try{
+   const r=await rpc('stage-board',{course});
+   if(!r||!r.ok||!Array.isArray(r.stages)||r.stages.length!==29){status('단계 현황 조회 실패: '+(r&&r.msg||'응답 오류'));return}
+   boardPanel.replaceChildren();boardPanel.style.display='grid';
+   boardPanel.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';boardPanel.style.gap='6px';
+   for(const item of r.stages){
+    const cell=document.createElement('div');
+    const text=r.qaMode?'테스트 가능':item.status==='passed'?'통과':item.status==='available'?'도전 가능':'잠김';
+    cell.textContent=item.stage+'단계 · '+text+' · '+item.attempts+'회';
+    cell.style.cssText='font-size:11px;padding:7px 3px;text-align:center;border:1px solid #888;border-radius:6px;opacity:'+(item.status==='locked'?'0.6':'1');
+    boardPanel.appendChild(cell);
+   }
+   if(r.nextStage&&!r.qaMode)stageSelect.value=String(r.nextStage);
+   status((r.qaMode?'🧪 STAGING QA: 29단계 자유 선택 가능 · ':'')+'서버 기록 기준 '+r.passedStages+'/29단계 통과 · 공식 승급 미반영');
+  }catch(e){status('단계 현황 통신 오류: '+e.message)}
+  finally{boardButton.disabled=false}
+ });
+ el('eden-v46-progress').addEventListener('click',async()=>{
+  const course=el('eden-v39-course').value;
+  if(!course){status('먼저 코스를 선택하세요.');return}
+  try{const r=await rpc('stage-progress',{course});
+   if(!r||!r.ok){status('단계 조회 실패: '+(r&&r.msg||'응답 오류'));return}
+   stageSelect.value=String(r.nextStage);
+   status('서버 시범 단계 · 통과 '+r.passedStages+' / 29 · '+(r.allPassed?'전체 완료':'다음 '+r.nextStage+'단계')+' · 공식 승급과 별개');
+  }catch(e){status('단계 조회 통신 오류: '+e.message)}
+ });
+ el('eden-v46-claim').addEventListener('click',async()=>{
+  if(!verified||activeSource!=='db'||!token){status('실제 코스 서버 검증 세션이 필요합니다.');return}
+  try{const r=await rpc('stage-claim',{token,course:activeCourse,stage:Number(stageSelect.value)});
+   status(r&&r.ok?'서버 시범 '+r.stage+'단계 기록 · '+(r.passed?'통과':'미통과')+' · 공식 승급 미반영':'단계 기록 실패: '+(r&&r.msg||'응답 오류'));
+  }catch(e){status('단계 기록 통신 오류: '+e.message)}
+ });
+ const combatButton=document.createElement('button');
+ combatButton.type='button';combatButton.id='eden-v47-combat';
+ combatButton.textContent='서버 전투 요약 보기';
+ combatButton.style.cssText='padding:7px 12px;border-radius:8px;margin:5px';
+ el('eden-v46-progress').insertAdjacentElement('afterend',combatButton);
+ combatButton.addEventListener('click',async()=>{
+  const course=el('eden-v39-course').value;
+  if(!course){status('코스를 먼저 선택하세요.');return}
+  try{
+   const r=await rpc('stage-combat',{course,stage:Number(stageSelect.value)});
+   if(!r||!r.ok){status('서버 전투 요약 오류: '+(r&&r.msg||'응답 오류'));return}
+   if(!r.finished){status('이 단계의 서버 검증 전투 기록이 없습니다.');return}
+   status('시범 전투 '+r.stage+'단계 · 도전 '+r.attempts+'회 · 몬스터 HP '+r.monsterHp+'/'+r.monsterMaxHp+' · 학생 HP '+r.studentHp+'/'+r.studentMaxHp+' · '+(r.passed?'통과':'미통과')+' · 공식 승급 미반영');
+  }catch(e){status('전투 요약 통신 오류: '+e.message)}
+ });
+ el('eden-v45-recheck').addEventListener('click',async()=>{
+  if(!verified||activeSource!=='db'||!token){status('현재 서버 코스 전투 세션이 없습니다.');return}
+  try{
+   const r=await rpc('db-completion',{token,course:activeCourse});
+   if(!r||!r.ok){status('완료 조회 실패: '+(r&&r.msg||'응답 오류'));return}
+   if(r.finished){status('서버 완료 확인 · 정답 '+r.correct+' / '+r.total+' · 공식 승급 미반영');return}
+   const x=await rpc('db-finalize',{token,course:activeCourse});
+   status(x&&x.ok?'서버 완료 확인 · 정답 '+x.correct+' / '+x.total+' · 공식 승급 미반영':'완료 처리 실패: '+(x&&x.msg||'응답 오류'));
+  }catch(e){status('통신 오류: '+e.message)}
+ });
+ el('eden-v39-load').addEventListener('click',async()=>{
+  const select=el('eden-v39-course');
+  select.replaceChildren(new Option('서버에서 불러오는 중…',''));
+  try{
+   const r=await rpc('courses');
+   if(!r||!r.ok||!Array.isArray(r.courses)){status(r&&r.msg||'코스 목록 요청 실패');return}
+   select.replaceChildren(new Option('코스를 선택하세요',''));
+   r.courses.forEach(c=>{
+    if(c&&typeof c.name==='string'&&c.name.trim())select.add(new Option(c.name,c.name));
+   });
+   status('활성 코스 '+r.courses.length+'개 불러옴');
+  }catch(e){select.replaceChildren(new Option('불러오기 실패',''));status('코스 목록 오류: '+e.message)}
+ });
+ toggle.addEventListener('change',()=>{
+  verified=toggle.checked;token=null;current=null;++serialQuiz;v54Reset();stageSelect.disabled=false;
+  status(verified?'서버 검증 모드: 전투 재시작 시 세션을 발급합니다.':'일반 로컬 전투 모드');
+  start(mi);
+ });
+ // v54 서버 검증 모드: 서버 응답 이후에만 HP/피격 연출을 갱신하며 로컬 승급/해금은 사용하지 않습니다.
+})();
+</script>
+</body></html>
